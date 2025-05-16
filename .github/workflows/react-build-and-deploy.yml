@@ -1,0 +1,36 @@
+name: React Build and Deploy
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Copy CNAME
+        run: |
+          if [ -f CNAME ]; then
+            cp CNAME ./build/CNAME
+          fi
+      
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
